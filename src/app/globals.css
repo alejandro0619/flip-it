@@ -1,33 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
+/* styles/globals.css o cualquier archivo CSS global */
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+    .text-gradient {
+      background: linear-gradient(90deg, #210B2C,#AE759F, #55286F);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .perspective {
+        perspective: 1000px;
+      }
+    
+      .transform-style-preserve-3d {
+        transform-style: preserve-3d;
+      }
+    
+      .backface-hidden {
+        backface-visibility: hidden;
+      }
+    
+      .rotate-y-180 {
+        transform: rotateY(180deg);
+      }
+
   }
-}
+
+  @keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  
+  
+  
