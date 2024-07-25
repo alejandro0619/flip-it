@@ -28,7 +28,7 @@ export default function AuthLoginPage() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `https://flip-it-seven.vercel.app/auth/callback`,
       },
     });
   };
