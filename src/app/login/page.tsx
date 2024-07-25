@@ -27,9 +27,7 @@ export default function AuthLoginPage() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `https://ttttgwqjdnywrxajdaiy.supabase.co/auth/v1/callback`,
-      },
+
     });
   };
 
