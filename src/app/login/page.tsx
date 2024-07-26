@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -11,28 +11,44 @@ import {
 import { login, signup } from "@/actions/auth";
 import { createClient } from "@/utils/supabase/client";
 import { FcGoogle } from "react-icons/fc";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function AuthLoginPage() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showForm, setShowForm] = useState<"LOGIN" | "SIGNUP">("LOGIN");
   const router = useRouter();
-  const redirectTo = process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000/auth/callback'
-    : 'https://flip-it-seven.vercel.app/auth/callback';
+  const searchParams = useSearchParams();
+  const supabase = createClient();
+  const redirectTo =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000/auth/callback"
+      : "https://flip-it-seven.vercel.app/auth/callback";
   const handleFlipClick = () => {
     setIsFlipped(!isFlipped);
   };
+  const code = searchParams.get("code") ? searchParams.get('code') : undefined;
 
+  useEffect(() => {
+    const handleAuth = async () => {
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!error) {
+          router.push("/home"); // Redirigir a la página deseada después del login
+        } else {
+          console.error("Error exchanging code for session:", error);
+        }
+      }
+    };
+    handleAuth();
+  }, [code]);
+  
   const handleSignInWithGoogle = async () => {
-    const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo,
-      }
-
+      },
     });
   };
 
