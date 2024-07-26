@@ -18,7 +18,9 @@ export default function AuthLoginPage() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showForm, setShowForm] = useState<"LOGIN" | "SIGNUP">("LOGIN");
   const router = useRouter();
-
+  const redirectTo = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000/auth/callback'
+    : 'https://flip-it-seven.vercel.app/auth/callback';
   const handleFlipClick = () => {
     setIsFlipped(!isFlipped);
   };
@@ -27,6 +29,9 @@ export default function AuthLoginPage() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo,
+      }
 
     });
   };
