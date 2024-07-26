@@ -54,6 +54,6 @@ export async function signup(
     }
   } catch (e: any) {
     console.error("SSDASDSAD", e.message);
-    return { error: e, payload: "Ha ocurrido un error" };
+    return { error: e.message, payload: "Ha ocurrido un error" };
   }
 }

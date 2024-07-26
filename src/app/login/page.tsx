@@ -90,11 +90,13 @@ export default function AuthLoginPage() {
       toast.error(
         response.error === "Email already exists"
           ? "El correo electrónico ya está en uso"
+          : response.error === "Database error saving new user"
+          ? "No se ha podido crear el usuario"
           : "Ha ocurrido un error, intente de nuevo más tarde"
       );
     } else {
       toast.success("Cuenta creada exitosamente");
-      router.push("/confirmation");
+      router.replace("/confirmation");
     }
   };
 
