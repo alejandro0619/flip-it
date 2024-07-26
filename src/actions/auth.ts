@@ -48,16 +48,3 @@ export async function signup(
     return { error: e, payload: "Ha ocurrido un error" };
   }
 }
-
-export async function googleAuth(payload: any) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.signInWithIdToken({
-    provider: "google",
-    token: payload.credential,
-  });
-
-  revalidatePath("/", "layout");
-  console.log("saasdasd");
-  redirect("/home");
-}
