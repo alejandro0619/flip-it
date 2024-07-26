@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -13,6 +13,13 @@ import { createClient } from "@/utils/supabase/client";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
+import {
+  Input,
+  Button,
+  FormControl,
+  FormLabel,
+
+} from '@chakra-ui/react'
 
 export default function AuthLoginPage() {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -29,25 +36,12 @@ export default function AuthLoginPage() {
   };
   const code = searchParams.get("code") ? searchParams.get('code') : undefined;
 
-  useEffect(() => {
-    const handleAuth = async () => {
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (!error) {
-          router.push("/home"); // Redirigir a la página deseada después del login
-        } else {
-          console.error("Error exchanging code for session:", error);
-        }
-      }
-    };
-    handleAuth();
-  }, [code]);
-  
   const handleSignInWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo,
+        
       },
     });
   };
@@ -105,8 +99,8 @@ export default function AuthLoginPage() {
   };
 
   return (
-    <main className="flex h-screen w-screen bg-[#F9F9F9]">
-      <section className="w-1/2 h-full bg-gradient-to-r from-[#D8B4E2] to-[#BC96E6] flex items-center justify-center pt-20 relative overflow-hidden">
+    <main className="flex h-screen w-screen ">
+      <section className="w-1/2 h-full bg-gradient-to-r from-[#D8B4E2] to-[#BC96E6]  flex items-center justify-center pt-20 relative overflow-hidden">
         {/* Flashcards flotantes */}
         <div className="absolute top-10 left-10 w-[150px] h-[100px] perspective animate-float">
           <div className="relative w-full h-full transition-transform duration-700 transform-style-preserve-3d">
@@ -146,7 +140,7 @@ export default function AuthLoginPage() {
           >
             <div className="absolute w-full h-full backface-hidden flex items-center justify-center bg-white border border-[#210B2C] rounded-xl shadow-lg">
               <h1
-                className="text-5xl font-bold text-gradient cursor-pointer"
+                className="text-5xl font-bold text-gradient cursor-pointer "
                 onClick={handleFlipClick}
               >
                 Voltea
@@ -163,8 +157,8 @@ export default function AuthLoginPage() {
           </div>
         </div>
       </section>
-      <section className="w-1/2 h-full flex flex-col justify-center items-center">
-        <h1 className="text-4xl font-extrabold text-[#210B2C] mb-6">
+      <section className="w-1/2 h-full flex flex-col justify-center items-center dark:bg-custom-dark">
+        <h1 className="text-4xl font-extrabold text-custom-dark dark:text-custom-lighter mb-6">
           ¡Hola de nuevo!
         </h1>
         {showForm === "LOGIN" ? (
@@ -210,7 +204,7 @@ export default function AuthLoginPage() {
             </div>
             <button
               type="submit"
-              className="w-full px-4 py-2 bg-customLight text-white rounded-lg font-semibold hover:bg-customDark transition-colors duration-300"
+              className="w-full px-4 py-2 bg-custom-light text-white rounded-lg font-semibold hover:bg-custom-dark transition-colors duration-300 dark:bg-custom-light dark:text-custom-dark dark:hover:bg-custom-light"
               disabled={!isLoginValid}
             >
               Iniciar sesión
@@ -218,7 +212,7 @@ export default function AuthLoginPage() {
             <button
               type="button"
               onClick={() => setShowForm("SIGNUP")}
-              className="w-full px-4 py-2 bg-customLight text-white rounded-lg font-semibold hover:bg-customDark transition-colors duration-300"
+              className="w-full px-4 py-2 bg-custom-light text-white rounded-lg font-semibold hover:bg-custom-dark transition-colors duration-300 dark:bg-custom-light dark:text-custom-dark dark:hover:bg-custom-light"
             >
               Crear cuenta
             </button>

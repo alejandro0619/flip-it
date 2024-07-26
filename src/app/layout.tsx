@@ -1,9 +1,13 @@
-import type { Metadata } from "next";
+import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const inter = Poppins({ weight: "400", subsets: ["latin"] });
+import type { Metadata } from "next";
+
+import ColorModeToggle from "@/components/ColorModeToggle";
+
+const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Flip it!",
@@ -12,17 +16,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {
-          <>
-            {children} <ToastContainer />{" "}
-          </>
-        }
+      <body className={`${poppins.className}`}>
+        <ChakraProvider>
+          {children}
+          <span className="fixed bottom-4 right-4 rounded-full">
+            <ColorModeToggle />
+          </span>
+
+          <ToastContainer />
+        </ChakraProvider>
       </body>
     </html>
   );
