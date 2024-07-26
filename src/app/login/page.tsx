@@ -228,9 +228,48 @@ export default function AuthLoginPage() {
           </form>
         ) : (
           <form
-            className="flex flex-col border-2 border-[#210B2C] p-6 rounded-xl bg-white shadow-lg w-[350px] max-w-sm space-y-4"
+            className="flex flex-col border-2 border-[#210B2C] p-6 rounded-xl bg-white shadow-lg w-[400px] max-w-md space-y-4"
             onSubmit={handleSubmitSignup(onSignupSubmit)}
           >
+            {/* Primer nombre */}
+            <div>
+              <label
+                htmlFor="firstName"
+                className="block text-lg font-medium text-[#210B2C]"
+              >
+                Primer nombre
+              </label>
+              <input
+                type="text"
+                {...registerSignup("firstName")}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-customLight"
+              />
+              {signupErrors.firstName && (
+                <span className="text-red-500">
+                  {signupErrors.firstName.message}
+                </span>
+              )}
+            </div>
+
+            {/* Segundo nombre */}
+            <div>
+              <label
+                htmlFor="secondName"
+                className="block text-lg font-medium text-[#210B2C]"
+              >
+                Segundo nombre
+              </label>
+              <input
+                type="text"
+                {...registerSignup("lastName")}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-customLight"
+              />
+              {signupErrors.lastName && (
+                <span className="text-red-500">
+                  {signupErrors.lastName.message}
+                </span>
+              )}
+            </div>
             <div>
               <label
                 htmlFor="email"
@@ -287,7 +326,7 @@ export default function AuthLoginPage() {
             </div>
             <button
               type="submit"
-              className="w-full px-4 py-2 bg-customLight text-white rounded-lg font-semibold hover:bg-customDark transition-colors duration-300"
+              className="w-full px-4 py-2 bg-custom-light text-white rounded-lg font-semibold hover:bg-custom-dark transition-colors duration-300 dark:bg-custom-light dark:text-custom-dark dark:hover:bg-custom-light"
               disabled={!isSignupValid}
             >
               Crear cuenta
@@ -295,7 +334,7 @@ export default function AuthLoginPage() {
             <button
               type="button"
               onClick={() => setShowForm("LOGIN")}
-              className="w-full px-4 py-2 bg-customLight text-white rounded-lg font-semibold hover:bg-customDark transition-colors duration-300"
+              className="w-full px-4 py-2 bg-custom-light text-white rounded-lg font-semibold hover:bg-custom-dark transition-colors duration-300 dark:bg-custom-light dark:text-custom-dark dark:hover:bg-custom-light"
             >
               Volver a iniciar sesión
             </button>

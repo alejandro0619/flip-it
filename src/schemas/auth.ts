@@ -10,6 +10,8 @@ export const loginSchema = z.object({
 export type LoginSchema = z.infer<typeof loginSchema>;
 
 export const signupSchema = z.object({
+  firstName: z.string().min(2, "😥El nombre debe tener al menos 2 caracteres"),
+  lastName: z.string().min(2, "😥El apellido debe tener al menos 2 caracteres"),
   email: z.string().email("😥El correo no es válido"),
   password: z
     .string()
