@@ -34,7 +34,8 @@ const ColorModeToggle: React.FC = () => {
         onClick={toggleDarkMode}
         className={`p-2 ${
           isDarkMode ? "bg-custom-light" : "bg-custom-dark"
-        } text-white rounded text-2xl`}
+        } text-white rounded text-2xl
+        animate-bounce animate-infinite animate-ease-in animate-fill-both`}
       >
         {isDarkMode ? "🌞" : "🌙"}
       </button>
