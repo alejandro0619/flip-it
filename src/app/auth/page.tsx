@@ -26,9 +26,10 @@ export default function AuthLoginPage() {
   return (
     <main className="flex h-screen w-screen ">
       <RightPanel />
-      <section className="w-1/2 h-full flex flex-col justify-center items-center dark:bg-custom-dark">
+      <section className="lg:w-1/2 w-full h-full flex flex-col justify-center items-center dark:bg-custom-dark">
+
         <h1 className="text-4xl font-extrabold text-custom-dark dark:text-custom-lighter mb-6">
-          ¡Hola de nuevo!
+          {`${showForm === 'LOGIN'? '¡Hola de nuevo!' : 'Bienvenido a Flip It!'}`}
         </h1>
         {showForm === "LOGIN" ? (
           <LoginForm

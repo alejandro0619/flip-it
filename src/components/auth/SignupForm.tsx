@@ -41,7 +41,7 @@ export default function SignupForm({
   };
   return (
     <form
-      className="flex flex-col border-2 border-[#210B2C] p-6 rounded-xl bg-white shadow-lg w-[400px] max-w-md space-y-4"
+      className="flex flex-col border-2 border-[#210B2C] p-6 rounded-xl bg-white shadow-lg w-[350px] max-w-md space-y-4"
       onSubmit={handleSubmitSignup(onSignupSubmit)}
     >
       {/* Primer nombre */}

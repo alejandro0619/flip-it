@@ -8,7 +8,7 @@ export default function ConfirmationPage() {
         Te hemos enviado un correo electrónico para que puedas confirmar tu
         cuenta
       </p>
-      <p> ¿Ya lo hiciste? Haz click </p> <Link href='/login'> acá e inicia sesión</Link>
+      <p> ¿Ya lo hiciste? Haz click </p> <Link href='/auth'> acá e inicia sesión</Link>
     </main>
   );
 }

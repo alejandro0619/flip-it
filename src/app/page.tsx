@@ -6,7 +6,7 @@ export default function Home() {
     <main className="h-screen w-screen relative">
         <p>Hola bienvenido, haz login aqui</p>
         <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
-          <Link href="/login">Login</Link>
+          <Link href="/auth">Login</Link>
         </button>
       
       

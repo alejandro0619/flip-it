@@ -7,7 +7,7 @@ export default function RightPanel() {
     setIsFlipped(!isFlipped);
   };
   return (
-    <section className="w-1/2 h-full bg-gradient-to-r from-[#D8B4E2] to-[#BC96E6]  flex items-center justify-center pt-20 relative overflow-hidden">
+    <section className="hidden lg:flex w-1/2 h-full bg-gradient-to-r from-[#D8B4E2] to-[#BC96E6]   items-center justify-center pt-20 relative overflow-hidden">
       {/* Flashcards flotantes */}
       <div className="absolute top-10 left-10 w-[150px] h-[100px] perspective animate-float">
         <div className="relative w-full h-full transition-transform duration-700 transform-style-preserve-3d">
