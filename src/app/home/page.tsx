@@ -1,8 +1,7 @@
-
 import { redirect } from "next/navigation"
 
 import { createClient } from "@/utils/supabase/server"
-import Avvvatars from "avvvatars-react";
+import Avatar from "@/components/Avatar";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -12,19 +11,14 @@ export default async function HomePage() {
     redirect("/login");
   }
   return (
-    // <h1>Holaaa bienvenido a mi pagina: {data.user.email}</h1>
     <main className="h-screen w-screen z-10">
-    <nav className="fixed z-20 top-0 h-[100px] w-full flex justify-center items-center bg-white shadow-md">
+    <nav className="fixed z-20 top-0 h-[100px] w-full flex justify-center items-center bg-black shadow-md text-white">
       Bienvenido...
-      <Avvvatars
-        value={data.user.email || data.user.user_metadata?.name || 'User'} // Fallback a 'User' si no hay email o name
-        size={100} // Tamaño del avatar
-        radius={50} // Redondez del avatar (50 para circular)
-        border={true} // Habilitar borde
-        borderColor="#000" // Color del borde
-      />
+     <Avatar
+     placeholder={data.user.email || data.user.user_metadata.name || 'User'}> 
+
+     </Avatar>
     </nav>
   </main>
   );
 }
-``;
