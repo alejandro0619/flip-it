@@ -9,14 +9,18 @@ import {
 import { FieldErrors, useForm } from "react-hook-form";
 import { createRoomSchema, CreateRoomSchema } from "@/schemas/rooms";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertRoom } from "@/actions/rooms";
+import { insertMemberInRoom, insertRoom } from "@/actions/rooms";
 import { toast } from "react-toastify";
 export default function CreateRoomModal({
   isOpen,
   onClose,
+  reloadAvailableRooms,
+  setReloadAvailableRooms,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  reloadAvailableRooms: boolean;
+  setReloadAvailableRooms: (reload: boolean) => void;
 }) {
   const {
     register,
@@ -32,11 +36,17 @@ export default function CreateRoomModal({
   });
 
   const onSubmit = (data: CreateRoomSchema) => {
-    insertRoom(data).then(res => {
-      toast.success(res.payload ?? "Sala creada satisfactoriamente");
+    // I should probably turn this into an async function
+    // It creates a room and then inserts the user in the room
+    insertRoom(data).then((res) => {
+      toast.success(res.message ?? "Sala creada satisfactoriamente");
+      insertMemberInRoom(res.payload as string).then((res) => {
+        toast.success(res.message ?? "Te has unido a la sala");
+        setReloadAvailableRooms(!reloadAvailableRooms);
+        reset();
+      });
       onClose();
-      reset()
-    })
+    });
   };
 
   const onError = (errors: FieldErrors) => {
