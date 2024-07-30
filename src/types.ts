@@ -1,5 +1,6 @@
 export interface RoomMember {
-  user_id: string; 
+  user_id: string;
+  full_name?: string
 }
 
 export interface Room {

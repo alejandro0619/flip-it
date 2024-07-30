@@ -6,7 +6,7 @@ export default function Avatar({ placeholder }: { placeholder: string }) {
   return (
     <Avvvatars
       value={placeholder}
-      size={64}
+      size={50}
       style="character"
       radius={50}
       border

@@ -12,29 +12,17 @@ import { IoPeopleCircleOutline } from "react-icons/io5";
 import { Room } from "@/types";
 
 export default function HomePage() {
-  const supabase = createClient();
+  
   const {
     isOpen: isCreateRoomModalOpen,
     onOpen: onCreateRoomModalOpen,
     onClose: onCreateRoomModalClose,
   } = useDisclosure();
 
-  const [user, setUser] = useState<User | null>(null);
+  
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [reloadAvailableRooms, setReloadAvailableRooms] =
-    useState<boolean>(false);
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user) {
-        redirect("/auth");
-      } else {
-        setUser(data.user);
-      }
-    };
+  const [reloadAvailableRooms, setReloadAvailableRooms] = useState<boolean>(false);
 
-    fetchUser();
-  }, [supabase]);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -50,23 +38,14 @@ export default function HomePage() {
   }, [reloadAvailableRooms]);
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="flex flex-col">
       <CreateRoomModal
         isOpen={isCreateRoomModalOpen}
         onClose={onCreateRoomModalClose}
         reloadAvailableRooms={reloadAvailableRooms}
         setReloadAvailableRooms={setReloadAvailableRooms}
       />
-      <nav className="fixed top-0 w-full flex justify-between items-center bg-custom-light text-custom-lighter shadow-md px-4 py-4 sm:px-6 md:px-8 lg:px-10 lg:py-6">
-        <div className="bg-white px-2 py-2 rounded-lg">
-          <span className="text-3xl font-semibold text-gradient ">
-            Flip it!
-          </span>
-        </div>
-        <Avatar placeholder={user?.email || user?.user_metadata.name} />
-      </nav>
-
-      <section className="flex-grow mt-[100px] p-6">
+      <section className="flex-grow p-6">
         <Button
           onClick={onCreateRoomModalOpen}
           colorScheme="purple"

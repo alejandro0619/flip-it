@@ -39,8 +39,7 @@ export async function signup(formData: SignupSchema): Promise<AuthResponse<strin
       password: formData.password,
       options: {
         data: {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          full_name: `${formData.firstName} ${formData.lastName}`,
         },
       }
     });

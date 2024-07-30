@@ -10,9 +10,8 @@ export default function AuthLoginPage() {
   const supabase = createClient();
 
   const redirectTo =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/auth/callback"
-      : "https://flip-it-seven.vercel.app/auth/callback";
+      "http://localhost:3000/auth/callback"
+
 
   const handleSignInWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({

@@ -1,6 +1,6 @@
 "use server";
 import { CreateRoomSchema } from "@/schemas/rooms";
-import { Room } from "@/types";
+import { Room, RoomMember } from "@/types";
 
 import { createClient } from "@/utils/supabase/server";
 
@@ -94,6 +94,44 @@ export async function getRooms(): Promise<Room[] | null> {
   if (!rooms) {
     return null;
   }
-  console.log(rooms);
   return rooms;
+}
+
+export async function getRoomById(id: string): Promise<Room | null> {
+  const supabase = await createClient();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const { data: rooms, error } = await supabase
+    .from("room")
+    .select("room_name, room_description, id, room_members(user_id)")
+    .eq("id", id);
+
+  if (!rooms || error || userError) {
+    return null;
+  }
+
+  const memberPromises = rooms[0].room_members.map(async (user) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("full_name, id")
+      .eq("id", user.user_id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching profile:", error);
+      return null;
+    }
+
+    return data ? { full_name: data.full_name, user_id: data.id } : null;
+  });
+
+  const members = await Promise.all(memberPromises);
+  const filteredMembers = members.filter((member) => member !== null);
+
+  const room = {
+    ...rooms[0],
+    room_members: filteredMembers.length > 0 ? filteredMembers : [] as RoomMember[],
+  };
+
+  console.log("room", room);
+  return room;
 }
