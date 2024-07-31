@@ -18,6 +18,10 @@ export default function AuthLoginPage() {
       provider: "google",
       options: {
         redirectTo,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       },
     });
   };
