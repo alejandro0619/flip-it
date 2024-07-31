@@ -16,6 +16,11 @@ const config: Config = {
           darkenedLight: '#A46AB0',
           darkenedLighter: '#9B68D7',
         },
+        darkPurple: '#210b2cff',
+        eminence: '#55286fff',
+        wisteria: '#bc96e6ff',
+        pinkLavender: '#d8b4e2ff',
+        skyMagenta: '#ae759fff',
       },
       animation: {
         'fade-in-out': 'fadeInOut 0.5s ease-in-out',

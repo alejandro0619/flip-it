@@ -76,43 +76,82 @@ export async function insertRoom(
   }
 }
 
+
 export async function getRooms(): Promise<Room[] | null> {
   const supabase = await createClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
-  const { data: roomsWhereUserBelongs, error } = await supabase
-    .from("room_members")
-    .select("room_id")
-    .eq("user_id", userData?.user?.id);
-  if (!roomsWhereUserBelongs) {
+  if (userError) {
+    console.error("Error fetching user:", userError);
     return null;
   }
-  const roomIds = roomsWhereUserBelongs?.map(({ room_id }) => room_id) as any[];
-  const { data: rooms, error: roomsError } = await supabase
+
+  const { data: roomsData, error } = await supabase
     .from("room")
-    .select("room_name, room_description, id, room_members!inner(user_id)")
-    .in("id", roomIds);
-  if (!rooms) {
+    .select("room_name, room_description, id, room_members(user_id), owner");
+
+  if (!roomsData || error) {
+    console.error("Error fetching rooms:", error);
     return null;
   }
+
+  const roomsPromises = roomsData.map(async (room) => {
+    const memberPromises = room.room_members.map(async (user) => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name, id, email")
+        .eq("id", user.user_id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        return null;
+      }
+
+      return data
+        ? { full_name: data.full_name, user_id: data.id, email: data.email }
+        : null;
+    });
+
+    const members = await Promise.all(memberPromises);
+    const filteredMembers = members.filter((member) => member !== null);
+
+    const owner = filteredMembers.find(
+      (member) => member.user_id === room.owner
+    );
+    return {
+      ...room,
+      room_members:
+        filteredMembers.length > 0 ? filteredMembers : ([] as RoomMember[]),
+      owner: {
+        user_id: room.owner,
+        full_name: owner?.full_name || "",
+        email: owner?.email || "",
+      },
+    };
+  });
+
+  const rooms = await Promise.all(roomsPromises);
+
+  console.log("rooms", rooms);
   return rooms;
 }
-
 export async function getRoomById(id: string): Promise<Room | null> {
   const supabase = await createClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
   const { data: rooms, error } = await supabase
     .from("room")
-    .select("room_name, room_description, id, room_members(user_id)")
-    .eq("id", id);
+    .select("room_name, room_description, id, room_members(user_id), owner")
+    .eq("id", id)
+    .single();
 
   if (!rooms || error || userError) {
     return null;
   }
 
-  const memberPromises = rooms[0].room_members.map(async (user) => {
+  const memberPromises = rooms.room_members.map(async (user) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("full_name, id")
+      .select("full_name, id, email")
       .eq("id", user.user_id)
       .single();
 
@@ -121,15 +160,26 @@ export async function getRoomById(id: string): Promise<Room | null> {
       return null;
     }
 
-    return data ? { full_name: data.full_name, user_id: data.id } : null;
+    return data
+      ? { full_name: data.full_name, user_id: data.id, email: data.email }
+      : null;
   });
 
   const members = await Promise.all(memberPromises);
   const filteredMembers = members.filter((member) => member !== null);
 
   const room = {
-    ...rooms[0],
-    room_members: filteredMembers.length > 0 ? filteredMembers : [] as RoomMember[],
+    ...rooms,
+    room_members:
+      filteredMembers.length > 0 ? filteredMembers : ([] as RoomMember[]),
+    owner: {
+      user_id: rooms.owner,
+      full_name: filteredMembers.find(
+        (member) => member.user_id === rooms.owner
+      )?.full_name as string,
+      email: filteredMembers.find((member) => member.user_id === rooms.owner)
+        ?.email as string,
+    },
   };
 
   console.log("room", room);
