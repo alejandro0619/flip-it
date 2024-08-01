@@ -9,8 +9,7 @@ export default function AuthLoginPage() {
   const [showForm, setShowForm] = useState<"LOGIN" | "SIGNUP">("LOGIN");
   const supabase = createClient();
 
-  const redirectTo =
-      `${window.location.origin}/auth/callback?next=/home`
+  const redirectTo = `https://flip-it-seven.vercel.app//auth/callback?next=/home`;
 
 
   const handleSignInWithGoogle = async () => {
