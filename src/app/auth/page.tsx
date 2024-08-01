@@ -10,7 +10,7 @@ export default function AuthLoginPage() {
   const supabase = createClient();
 
   const redirectTo =
-      "http://localhost:3000/auth/callback"
+      `${window.location.origin}/auth/callback?next=/home`
 
 
   const handleSignInWithGoogle = async () => {
