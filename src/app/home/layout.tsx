@@ -35,7 +35,11 @@ export default function HomeLayout({
             </span>
           </Link>
         </div>
-        <Avatar placeholder={user?.email || user?.user_metadata.name} />
+        <Avatar
+          placeholder={user?.email || user?.user_metadata.name}
+          size={50}
+          style="character"
+        />
       </nav>
 
       {children}
