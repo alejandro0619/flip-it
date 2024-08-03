@@ -56,7 +56,8 @@ export default function CreateRoomModal({
       toast.success(roomResponse.message ?? "Sala creada satisfactoriamente");
 
       const memberResponse = await insertMemberInRoom(
-        roomResponse.payload as string
+        roomResponse.payload as string,
+        "ADMIN" // The user that creates the room is the admin
       );
       toast.success(memberResponse.message ?? "Te has unido a la sala");
 

@@ -2,6 +2,7 @@ export interface RoomMember {
   user_id: string;
   full_name?: string;
   email?: string;
+  permissions?: "READ" | "ADMIN" | "EDIT",
 }
 
 export interface Room {

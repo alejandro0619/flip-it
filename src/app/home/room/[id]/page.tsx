@@ -17,20 +17,31 @@ import {
   DrawerOverlay,
 } from "@chakra-ui/react";
 import Avatar from "@/components/Avatar";
+import { FaCrown } from "react-icons/fa6";
+import { User } from "@supabase/supabase-js";
+import { createClient } from "@/utils/supabase/client";
 export default function RoomDetails({ params }: { params: { id: string } }) {
   const [room, setRoom] = useState<Room | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const {
     isOpen: isMemberListOpen,
     onOpen: onMemberListOpen,
     onClose: onMemberListClose,
   } = useDisclosure();
   const memberListBtn = useRef(null);
+
   useEffect(() => {
     (async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) {
+        setCurrentUser(data.user);
+      }
       const room = await getRoomById(params.id);
       setRoom(room);
     })();
   }, [params]);
+
   return (
     <div className="mt-4 mx-2 p-4 bg-white shadow-lg rounded-lg">
       <Drawer
@@ -49,22 +60,34 @@ export default function RoomDetails({ params }: { params: { id: string } }) {
             {room?.room_members.map((member) => (
               <div
                 key={member.user_id}
-                className="flex items-center p-3 mb-2 bg-white rounded-lg shadow hover:bg-wisteria transition duration-200 ease-in-out border border-gray-200"
+                className="flex items-center p-3 mb-2 bg-white rounded-lg shadow hover:bg-wisteria transition duration-200 ease-in-out border border-gray-200 w-full"
               >
                 <div className="flex-shrink-0">
-                  <Avatar placeholder={member.full_name as string} />
+                  <Avatar
+                    placeholder={member.full_name as string}
+                    size={50}
+                    style="character"
+                  />
                 </div>
-                <div className="ml-4 flex-1 min-w-0 gap-2">
-                  <h3 className="text-lg font-semibold text-darkPurple">
-                    {member.full_name}
+                <div className="ml-4 flex flex-col min-w-0 gap-2">
+                  <h3 className="text-lg font-semibold text-darkPurple flex gap-2 items-center">
+                    {member.full_name}{" "}
+                    {room?.owner.user_id === member.user_id && (
+                      <FaCrown size={20} className="text-skyMagenta" />
+                    )}
                   </h3>
-                  <p className="text-sm text-gray-500 truncate mb-4">{member.email}</p>
-                  <Menu >
-                    <MenuButton className="bg-skyMagenta hover:bg-wisteria text-white font-bold py-2 px-4 rounded">
+                  <p className="text-sm text-gray-500 truncate">
+                    {member.email}
+                  </p>
+                  <Menu>
+                    <MenuButton className="bg-skyMagenta hover:bg-white text-white hover:text-skyMagenta font-bold py-2 px-4 rounded">
                       Acciones
                     </MenuButton>
                     <MenuList>
-                      <MenuItem>Eliminar de la sala</MenuItem>
+                      {room?.owner.user_id !== member.user_id &&
+                        room?.owner.user_id === currentUser?.id && (
+                          <MenuItem>Eliminar de la sala</MenuItem>
+                        )}
                       <MenuItem>Ver perfil</MenuItem>
                     </MenuList>
                   </Menu>
