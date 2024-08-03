@@ -20,8 +20,11 @@ import Avatar from "@/components/Avatar";
 import { FaCrown } from "react-icons/fa6";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
+import LoadingScreen from "@/components/LoadingScreen";
+
 export default function RoomDetails({ params }: { params: { id: string } }) {
   const [room, setRoom] = useState<Room | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const {
     isOpen: isMemberListOpen,
@@ -39,11 +42,13 @@ export default function RoomDetails({ params }: { params: { id: string } }) {
       }
       const room = await getRoomById(params.id);
       setRoom(room);
+      setIsLoading(false);
     })();
   }, [params]);
 
   return (
     <div className="mt-4 mx-2 p-4 bg-white shadow-lg rounded-lg">
+      <LoadingScreen isLoading={isLoading} />
       <Drawer
         isOpen={isMemberListOpen}
         placement="right"

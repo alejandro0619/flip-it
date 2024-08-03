@@ -1,53 +1,39 @@
-'use client';
-import {
-  Button,
-  useDisclosure,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogBody,
-  AlertDialogContent,
-  Tooltip,
-  FormLabel,
-  Badge,
-} from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+"use client";
 
-import { getRoomById, getRooms, joinRoom } from "@/actions/rooms";
-
+import { Button, useDisclosure } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { getRooms } from "@/actions/rooms";
 import { IoPeopleCircleOutline } from "react-icons/io5";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Room } from "@/types";
 import CreateRoomModal from "@/components/CreateRoomModal";
-import { useForm } from "react-hook-form";
-import Avatar from "@/components/Avatar";
-import { JoinRoomSchema, joinRoomSchema } from "@/schemas/rooms";
-import { toast } from "react-toastify";
-import { zodResolver } from "@hookform/resolvers/zod";
 import JoinRoomDialog from "@/components/JoinRoomDialog";
+import LoadingScreen from "@/components/LoadingScreen";
+
 export default function HomePage() {
   const {
     isOpen: isCreateRoomModalOpen,
     onOpen: onCreateRoomModalOpen,
     onClose: onCreateRoomModalClose,
   } = useDisclosure();
-
   const searchParams = useSearchParams();
   const join_room_code = searchParams.get("join_room_code");
-  // Once a searchParams with the code of the room to join is found, the modal is opened and the room information is fetched and stored in this state.
-
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [reloadAvailableRooms, setReloadAvailableRooms] =
     useState<boolean>(false);
 
   useEffect(() => {
     const fetchRooms = async () => {
+      setIsLoading(true);
       const rooms = await getRooms();
       if (rooms) {
         setRooms(rooms);
       } else {
         setRooms([]);
       }
+      setIsLoading(false);
     };
 
     fetchRooms();
@@ -55,6 +41,7 @@ export default function HomePage() {
 
   return (
     <main className="flex flex-col">
+      <LoadingScreen isLoading={isLoading} />
       <JoinRoomDialog
         join_room_code={join_room_code}
         reloadAvailableRooms={reloadAvailableRooms}
