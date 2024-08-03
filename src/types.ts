@@ -9,5 +9,6 @@ export interface Room {
   room_description: string;
   room_members: RoomMember[];
   id: string,
-  owner: RoomMember
+  owner: RoomMember,
+  is_public: boolean;
 }

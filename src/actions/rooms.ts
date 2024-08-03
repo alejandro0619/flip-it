@@ -1,7 +1,7 @@
 "use server";
 import { CreateRoomSchema } from "@/schemas/rooms";
 import { Room, RoomMember } from "@/types";
-
+import { SHA256, AES } from "crypto-js";
 import { createClient } from "@/utils/supabase/server";
 
 type ServerRes<T> = {
@@ -43,17 +43,21 @@ export async function insertMemberInRoom(
   }
 }
 export async function insertRoom(
-  payload: CreateRoomSchema
+  payload: CreateRoomSchema & { is_public: boolean }
 ): Promise<ServerRes<string>> {
   try {
     const supabase = await createClient();
-    const { data, error: userError } = await supabase.auth.getUser();
+    const { data, error: _userError } = await supabase.auth.getUser();
     const { error, data: insertionData } = await supabase
       .from("room")
       .insert({
         room_name: payload.name,
         room_description: payload.description,
         owner: data?.user?.id,
+        is_public: payload.is_public,
+        room_password: payload.room_password
+          ? SHA256(payload.room_password).toString()
+          : null,
       })
       .select("id");
     console.log("insertionData", insertionData);
@@ -76,10 +80,10 @@ export async function insertRoom(
   }
 }
 
-
 export async function getRooms(): Promise<Room[] | null> {
   const supabase = await createClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const { data: _userData, error: userError } = await supabase.auth.getUser();
+  console.log("mi id de usuario es:", _userData?.user?.id);
   if (userError) {
     console.error("Error fetching user:", userError);
     return null;
@@ -87,14 +91,23 @@ export async function getRooms(): Promise<Room[] | null> {
 
   const { data: roomsData, error } = await supabase
     .from("room")
-    .select("room_name, room_description, id, room_members(user_id), owner");
+    .select(
+      "room_name, room_description, id, room_members(user_id), owner, is_public"
+    );
+
+  console.log("informoacion sobre las salas", roomsData?.[0].room_members);
 
   if (!roomsData || error) {
     console.error("Error fetching rooms:", error);
     return null;
   }
-
-  const roomsPromises = roomsData.map(async (room) => {
+  const rooms_where_user_is_member = roomsData.filter((room) => {
+    return room.room_members.some(
+      (member) => member.user_id === _userData?.user?.id
+    );
+  });
+  console.log('salas donde el usuario es miembro', rooms_where_user_is_member);
+  const roomsPromises = rooms_where_user_is_member.map(async (room) => {
     const memberPromises = room.room_members.map(async (user) => {
       const { data, error } = await supabase
         .from("profiles")
@@ -140,7 +153,9 @@ export async function getRoomById(id: string): Promise<Room | null> {
   const { data: userData, error: userError } = await supabase.auth.getUser();
   const { data: rooms, error } = await supabase
     .from("room")
-    .select("room_name, room_description, id, room_members(user_id), owner")
+    .select(
+      "room_name, room_description, id, room_members(user_id), owner, is_public"
+    )
     .eq("id", id)
     .single();
 
@@ -185,3 +200,78 @@ export async function getRoomById(id: string): Promise<Room | null> {
   console.log("room", room);
   return room;
 }
+
+export async function joinRoom(
+  room_id: string,
+  password?: string
+): Promise<ServerRes<String>> {
+  console.log("verga");
+  const supabase = await createClient();
+  const { data: _userData, error: userError } = await supabase.auth.getUser();
+  if (userError) {
+    console.error("Error fetching user:", userError);
+    return {
+      message: "Error al unirte a la sala",
+      error: {
+        code: "UNAUTHORIZED",
+        err_message: "Error al unirte a la sala",
+      },
+    };
+  }
+
+  const userId = _userData?.user.id;
+
+  // Check if the user is already a member of the room
+  const { data: memberData, error: memberError } = await supabase
+    .from("room_members")
+    .select("user_id")
+    .eq("room_id", room_id)
+    .eq("user_id", userId)
+    .single();
+
+  if (memberData) {
+    return {
+      message: "Ya eres miembro de esta sala",
+      error: {
+        code: "ALREADY_MEMBER",
+        err_message: "Ya eres miembro de esta sala",
+      },
+    };
+  }
+
+  const { data: roomData, error } = await supabase
+    .from("room")
+    .select(
+      "room_name, room_description, id, room_members(user_id), owner, is_public, room_password"
+    )
+    .eq("id", room_id)
+    .single();
+
+  if (!roomData || error) {
+    console.error("Error fetching room:", error);
+    return {
+      message: "Error al unirte a la sala",
+      error: {
+        code: "ROOM_NOT_FOUND",
+        err_message: "Error al unirte a la sala",
+      },
+    };
+  }
+
+  if (roomData.is_public) {
+    return insertMemberInRoom(String(room_id));
+  }
+
+  if (password && roomData.room_password === SHA256(password).toString()) {
+    return insertMemberInRoom(String(room_id));
+  }
+
+  return {
+    message: "Contraseña incorrecta",
+    error: {
+      code: "INCORRECT_PASSWORD",
+      err_message: "Contraseña incorrecta",
+    },
+  };
+}
+

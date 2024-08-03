@@ -22,14 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.className}`}>
-        <ChakraProvider>
-          {children}
-          <span className="fixed bottom-4 right-4 rounded-full">
-            <ColorModeToggle />
-          </span>
-
-          <ToastContainer />
-        </ChakraProvider>
+        <ChakraProvider>{children}</ChakraProvider>
+        <span className="fixed bottom-4 right-4 rounded-full">
+          <ColorModeToggle />
+        </span>
+        <ToastContainer />
       </body>
     </html>
   );
