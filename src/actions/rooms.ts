@@ -101,7 +101,7 @@ export async function getRooms(): Promise<Room[] | null> {
     .select(
       "room_name, room_description, id, room_members(user_id), owner, is_public"
     );
-
+    console.log('que molleja', roomsData)
   if (!roomsData || error) {
     console.error("Error fetching rooms:", error);
     return null;

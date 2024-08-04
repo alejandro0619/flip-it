@@ -10,6 +10,7 @@ import { Room } from "@/types";
 import CreateRoomModal from "@/components/CreateRoomModal";
 import JoinRoomDialog from "@/components/JoinRoomDialog";
 import LoadingScreen from "@/components/LoadingScreen";
+import { createClient } from "@/utils/supabase/client";
 
 export default function HomePage() {
   const {
@@ -20,25 +21,36 @@ export default function HomePage() {
   const searchParams = useSearchParams();
   const join_room_code = searchParams.get("join_room_code");
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [reloadAvailableRooms, setReloadAvailableRooms] =
     useState<boolean>(false);
-
   useEffect(() => {
+    const supabase = createClient();
     const fetchRooms = async () => {
       setIsLoading(true);
       const rooms = await getRooms();
-      if (rooms) {
-        setRooms(rooms);
-      } else {
-        setRooms([]);
-      }
+      console.log(rooms);
+      setRooms(rooms ? rooms : []);
       setIsLoading(false);
     };
+    fetchRooms().then(res => console.log('primera vez haciendo fetch'));
+    const subscription = supabase
+      .channel("custom-all-channel")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "room" },
+        async (_payload) => {
+          console.log("Database change detected");
+          fetchRooms();
+        }
+      )
+      .subscribe();
 
-    fetchRooms();
-  }, [reloadAvailableRooms]);
-
+    // Cleanup subscription on unmount
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
   return (
     <main className="flex flex-col">
       <LoadingScreen isLoading={isLoading} />
@@ -50,8 +62,6 @@ export default function HomePage() {
       <CreateRoomModal
         isOpen={isCreateRoomModalOpen}
         onClose={onCreateRoomModalClose}
-        reloadAvailableRooms={reloadAvailableRooms}
-        setReloadAvailableRooms={setReloadAvailableRooms}
       />
       <section className="flex-grow p-6">
         <Button

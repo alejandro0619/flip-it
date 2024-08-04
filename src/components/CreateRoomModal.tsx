@@ -23,13 +23,9 @@ import { FaLock, FaUnlock } from "react-icons/fa";
 export default function CreateRoomModal({
   isOpen,
   onClose,
-  reloadAvailableRooms,
-  setReloadAvailableRooms,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  reloadAvailableRooms: boolean;
-  setReloadAvailableRooms: (reload: boolean) => void;
 }) {
   const {
     register,
@@ -61,7 +57,6 @@ export default function CreateRoomModal({
       );
       toast.success(memberResponse.message ?? "Te has unido a la sala");
 
-      setReloadAvailableRooms(!reloadAvailableRooms);
       reset();
       onClose();
     } catch (error: any) {
