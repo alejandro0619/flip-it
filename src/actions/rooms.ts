@@ -285,3 +285,32 @@ export async function joinRoom(
   };
 }
 
+export async function deleteMemberFromRoom(
+  room_id: string,
+  user_to_delete_id: string
+): Promise<ServerRes<string>> {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("room_members")
+      .delete()
+      .eq("room_id", room_id)
+      .eq("user_id", user_to_delete_id);
+
+    if (error) {
+      throw new Error("Error al eliminar al usuario de la sala");
+    }
+    return {
+      message: "Usuario eliminado de la sala",
+      payload: "Usuario eliminado de la sala",
+    };
+  } catch (e: any) {
+    return {
+      message: e.message,
+      error: {
+        code: e.code,
+        err_message: e.message,
+      },
+    };
+  }
+}

@@ -12,13 +12,15 @@ export default function Avatar({
   size: number;
 }) {
   return (
-    <Avvvatars
-      value={placeholder}
-      size={size}
-      style={style}
-      radius={50}
-      border
-      borderSize={3}
-    />
+    <span className="mr-2 flex-shrink-0">
+      <Avvvatars
+        value={placeholder}
+        size={size}
+        style={style}
+        radius={50}
+        border
+        borderSize={3}
+      />
+    </span>
   );
 }

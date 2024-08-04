@@ -18,15 +18,7 @@ import { useForm } from "react-hook-form";
 import { useEffect, useRef, useState } from "react";
 import { Room } from "@/types";
 
-export default function JoinRoomDialog({
-  join_room_code,
-  reloadAvailableRooms,
-  setReloadAvailableRooms,
-}: {
-  join_room_code: string | null;
-  reloadAvailableRooms: boolean;
-  setReloadAvailableRooms: (reload: boolean) => void;
-}) {
+export default function JoinRoomDialog({ join_room_code }: { join_room_code: string | null }) {
   const cancelJoin = useRef(null);
   const [room_to_join, set_room_to_join] = useState<Room | null>(null);
   useEffect(() => {
@@ -61,7 +53,6 @@ export default function JoinRoomDialog({
         ({ error, message, payload }) => {
           console.log("error", error, "message", message, "payload", payload);
           if (!error) {
-            setReloadAvailableRooms(!reloadAvailableRooms);
             onJoinRoomModalClose();
             toast.success("¡Te has unido a la sala exitosamente!");
           } else {
@@ -202,7 +193,6 @@ export default function JoinRoomDialog({
                           joinRoom(room_to_join.id).then(
                             ({ message, error, payload }) => {
                               if (!error) {
-                                setReloadAvailableRooms(!reloadAvailableRooms);
                                 onJoinRoomModalClose();
                                 toast.success(
                                   "¡Te has unido a la sala exitosamente!"
