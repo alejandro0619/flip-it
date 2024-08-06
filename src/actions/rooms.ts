@@ -1,18 +1,9 @@
 "use server";
 import { CreateRoomSchema } from "@/schemas/rooms";
-import { Room, RoomMember } from "@/types";
+import { Room, RoomMember, ServerRes } from "@/types";
 import { SHA256, AES } from "crypto-js";
 import { createClient } from "@/utils/supabase/server";
-import { permission } from "process";
 
-type ServerRes<T> = {
-  message: string;
-  payload?: T;
-  error?: {
-    code: string;
-    err_message: string;
-  };
-};
 /// Insert a member in a room. If it's successful, it will return a message saying "😁 Te has unido a la sala"
 /// @param room_id The id of the room
 /// @param permission The permission of the user in the room (READ, ADMIN, EDIT) by default is set to READ
