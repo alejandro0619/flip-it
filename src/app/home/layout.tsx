@@ -12,7 +12,9 @@ import {
   MenuDivider,
   MenuList,
   Button,
+  useDisclosure,
 } from "@chakra-ui/react";
+import { UserProfile } from "@/components/Profile";
 
 export default function HomeLayout({
   children,
@@ -22,6 +24,12 @@ export default function HomeLayout({
   const [user, setUser] = useState<User | null>(null);
   const supabase = createClient();
   const router = useRouter();
+  const {
+    isOpen: isProfileEditionOpen,
+    onOpen: onProfileEditionOpen,
+    onClose: onProfileEditionClose,
+  } = useDisclosure();
+
   useEffect(() => {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -42,8 +50,17 @@ export default function HomeLayout({
     }
   };
 
+  const handleProfileEdition = () => {
+    onProfileEditionOpen();
+  };
   return (
     <div className="flex flex-col">
+      <UserProfile
+        isProfileOpen={isProfileEditionOpen}
+        onProfileClose={onProfileEditionClose}
+        userId={user?.id as string}
+        isModifiable
+      />
       <nav className="w-full flex justify-between items-center bg-custom-light text-custom-lighter shadow-md px-4 py-2 sm:px-6 md:px-8 lg:px-6 lg:py-2">
         <div className="bg-white px-2 py-2 rounded-lg">
           <Link href="/home">
@@ -63,9 +80,7 @@ export default function HomeLayout({
             </div>
           </MenuButton>
           <MenuList>
-            <MenuItem>
-              <Link href="/profile">Perfil</Link>
-            </MenuItem>
+            <MenuItem onClick={handleProfileEdition}>Perfil</MenuItem>
             <MenuDivider />
             <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
           </MenuList>
